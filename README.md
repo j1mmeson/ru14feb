@@ -16,4 +16,4 @@
 
 В веб-странице указать встраиваемый код (iframe) для формы Google Forms и ссылку на Google Sheet (она вида https://spreadsheets.google.com/feeds/cells/ID таблицы/1/public/full?alt=json)
 
-Пример ID таблицы https://docs.google.com/spreadsheets/d/**1pIj0m7_5JQcnR7x7zG2CcuQ822JZFpT8YdgeZnvlWPU**/edit
+Пример ID таблицы (между /d/ и /edit) https://docs.google.com/spreadsheets/d/1pIj0m7_5JQcnR7x7zG2CcuQ822JZFpT8YdgeZnvlWPU/edit
