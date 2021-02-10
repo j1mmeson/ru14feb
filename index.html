@@ -1,0 +1,96 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Любовь сильнее страха</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+        <style>
+            html, body {
+                margin: 0;
+            }
+            body {
+                background-color: #F6EAEA;
+                font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+            }
+            h1 {
+                color: #8A2C49;
+            }
+            #map {
+                width: 100%;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+            }
+            #msg {
+                background-color: #F6EAEA;
+                border: 1px solid #999;
+                padding: 10px 40px;
+                z-index: 999;
+                position: absolute;
+                bottom: 0;
+            }
+            iframe {
+                min-height: 500px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="modal" class="modal" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeMgUoEPoxA6VdzM2ZCQncLqei4-32q-nLSRq7xo8Nh6LwYbQ/viewform?embedded=true" width="100%" height="100%" frameborder="0" marginheight="0" marginwidth="0">Загрузка…</iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="map"></div>
+        <div id="msg">
+            <h1>Любовь сильнее страха</h1>
+            <p><i>В 20:00 выходите во двор. Включайте фонарики. Объединимся ради свободы.</i></p>
+            <p><a href="#" data-bs-toggle="modal" data-bs-target="#modal">Указать свой двор на карте</a> (это абсолютно анонимно)</p>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.min.js" integrity="sha384-nsg8ua9HAw1y0W1btsyWgBklPnCUAFLuTMS2G72MMONqmOymq585AcH49TLBQObG" crossorigin="anonymous"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function(event) { 
+                var start = [55.75393, 37.620795];
+                var zoom = 6;
+                var map = L.map('map').setView(start, zoom);
+
+                var google = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+                    maxZoom: 20,
+                    subdomains:['mt0','mt1','mt2','mt3']
+                }).addTo(map);
+
+                var url = "https://spreadsheets.google.com/feeds/cells/1pIj0m7_5JQcnR7x7zG2CcuQ822JZFpT8YdgeZnvlWPU/1/public/full?alt=json";
+                $.ajax({
+                    url: url,
+                    dataType: "jsonp",
+                    success: function (data) {
+                        var entries = data.feed.entry;
+                        var cursor = null;
+                        $(entries).each(function(i, entry) {
+                            var cell = entry["gs$cell"];
+                            if (cell.col == "1") cursor = {};
+                            if (cell.col == "3") cursor["message"] = cell.inputValue;
+                            if (cell.col == "4" && cell["$t"]) cursor["latlong"] = cell["$t"].split(", ");
+                            if (cell.col == "4" && cell["$t"]) {
+                                var marker = L.marker(cursor.latlong).addTo(map);
+                                if (cursor.message) {
+                                    marker.bindPopup(cursor.message);
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
